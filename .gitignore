@@ -1,0 +1,19 @@
+node_modules
+dist
+dist-ssr
+.vite
+*.local
+.DS_Store
+.idea
+.vscode
+*.log
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Auto-generated artifacts from vite.config.ts
+vite.config.d.ts
+vite.config.js
+
+# Editor / agent state
+.claude/
