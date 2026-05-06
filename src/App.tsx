@@ -1181,7 +1181,82 @@ function TokensPage() {
           <h2 className="text-h4 font-semibold text-text-primary mb-3">
             Typography
           </h2>
-          <div className="rounded-md border border-gray-200 overflow-hidden">
+          <div className="mb-4 rounded-md border border-gray-100 bg-card p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-text-tertiary">
+                  Font family
+                </div>
+                <div className="mt-1 text-h2 font-semibold text-text-primary">
+                  Inter Variable
+                </div>
+                <p className="mt-1 text-[13px] text-text-secondary">
+                  Loaded via{" "}
+                  <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[12px]">
+                    @fontsource-variable/inter
+                  </code>{" "}
+                  · imported in{" "}
+                  <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[12px]">
+                    src/main.tsx
+                  </code>{" "}
+                  · the entire weight axis (100–900) is available, plus the
+                  Inter feature flags{" "}
+                  <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[12px]">
+                    cv02 cv03 cv04 cv11
+                  </code>{" "}
+                  set on{" "}
+                  <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[12px]">
+                    body
+                  </code>
+                  .
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-[11px] uppercase tracking-wider text-text-tertiary">
+                  Tailwind class
+                </div>
+                <div className="mt-1 font-mono text-[14px] font-medium text-text-primary">
+                  font-sans
+                </div>
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-md bg-muted/40 p-3 text-center">
+                <div
+                  className="text-[40px] leading-none text-text-primary"
+                  style={{ fontWeight: 400 }}
+                >
+                  Aa
+                </div>
+                <div className="mt-2 text-[11px] uppercase tracking-wider text-text-tertiary">
+                  Regular · 400
+                </div>
+              </div>
+              <div className="rounded-md bg-muted/40 p-3 text-center">
+                <div
+                  className="text-[40px] leading-none text-text-primary"
+                  style={{ fontWeight: 500 }}
+                >
+                  Aa
+                </div>
+                <div className="mt-2 text-[11px] uppercase tracking-wider text-text-tertiary">
+                  Medium · 500
+                </div>
+              </div>
+              <div className="rounded-md bg-muted/40 p-3 text-center">
+                <div
+                  className="text-[40px] leading-none text-text-primary"
+                  style={{ fontWeight: 600 }}
+                >
+                  Aa
+                </div>
+                <div className="mt-2 text-[11px] uppercase tracking-wider text-text-tertiary">
+                  Semibold · 600
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-md border border-gray-100 overflow-hidden">
             <table className="w-full text-[14px]">
               <thead className="bg-gray-50 text-text-tertiary text-[12px]">
                 <tr>
