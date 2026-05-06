@@ -188,6 +188,11 @@ import {
 } from "@/components/admin/dashboard-grid";
 import { LeaderboardTable } from "@/components/admin/leaderboard-table";
 import {
+  CommandPalette,
+  useCommandPaletteHotkey,
+  type CommandItem,
+} from "@/components/ui/command-palette";
+import {
   DollarSign,
   ShoppingBag as ShoppingBagIcon,
 } from "lucide-react";
@@ -5522,13 +5527,14 @@ function ThemeToggle() {
 
 function DocsHeader({
   onMenuClick,
-  search,
-  onSearchChange,
+  onOpenPalette,
 }: {
   onMenuClick: () => void;
-  search: string;
-  onSearchChange: (q: string) => void;
+  onOpenPalette: () => void;
 }) {
+  const isMac =
+    typeof navigator !== "undefined" &&
+    /Mac|iP(hone|ad|od)/.test(navigator.platform);
   return (
     <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 w-full max-w-screen-2xl items-center gap-3 px-4 md:px-6">
@@ -5559,21 +5565,26 @@ function DocsHeader({
           ))}
         </nav>
         <div className="ml-auto flex min-w-0 items-center gap-1.5">
-          <div className="hidden xl:block w-56 2xl:w-64">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-text-tertiary pointer-events-none" />
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Search components..."
-                className="h-9 w-full rounded-md border border-gray-200 bg-gray-50 pl-9 pr-12 text-[13px] text-text-primary placeholder:text-text-tertiary focus:outline-none focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20"
-              />
-              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden 2xl:flex items-center gap-0.5 rounded border border-gray-200 bg-background px-1.5 h-5 text-[10px] font-mono text-text-tertiary">
-                ⌘K
-              </kbd>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={onOpenPalette}
+            aria-label="Search components"
+            className="hidden md:inline-flex h-9 items-center gap-2 rounded-md border border-gray-200 bg-gray-50 px-3 text-[13px] text-text-tertiary transition-colors hover:bg-background hover:text-text-secondary md:w-48 lg:w-56 xl:w-64"
+          >
+            <Search className="size-4 shrink-0" />
+            <span className="flex-1 text-left">Search components...</span>
+            <kbd className="hidden lg:inline-flex h-5 items-center gap-0.5 rounded border border-gray-200 bg-background px-1.5 font-mono text-[10px] text-text-tertiary">
+              {isMac ? "⌘" : "Ctrl"} K
+            </kbd>
+          </button>
+          <button
+            type="button"
+            onClick={onOpenPalette}
+            aria-label="Search components"
+            className="md:hidden grid size-9 place-items-center rounded-md text-text-secondary hover:bg-gray-100 hover:text-text-primary"
+          >
+            <Search className="size-4" />
+          </button>
           <LanguageSwitcher />
           <a
             href="https://github.com"
@@ -5667,6 +5678,7 @@ function App() {
   const [activeId, setActiveId] = React.useState<string>(() => getInitialId());
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
   const [filter, setFilter] = React.useState("");
+  const [paletteOpen, setPaletteOpen] = React.useState(false);
 
   React.useEffect(() => {
     const onHash = () => setActiveId(getInitialId());
@@ -5681,6 +5693,23 @@ function App() {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   };
 
+  const openPalette = React.useCallback(() => setPaletteOpen(true), []);
+  useCommandPaletteHotkey(openPalette);
+
+  const paletteItems = React.useMemo<CommandItem[]>(
+    () =>
+      sections.flatMap((section) =>
+        section.pages.map((p) => ({
+          id: p.id,
+          label: p.title,
+          group: section.title,
+          keywords: `${p.id} ${section.title}`,
+          onSelect: () => navigate(p.id),
+        }))
+      ),
+    []
+  );
+
   const page = pageById(activeId);
   const PageComponent = page.Component;
 
@@ -5688,8 +5717,7 @@ function App() {
     <div className="min-h-full bg-background">
       <DocsHeader
         onMenuClick={() => setMobileNavOpen(true)}
-        search={filter}
-        onSearchChange={setFilter}
+        onOpenPalette={openPalette}
       />
 
       {/* Mobile / tablet sidebar drawer */}
@@ -5742,6 +5770,12 @@ function App() {
         </main>
       </div>
 
+      <CommandPalette
+        open={paletteOpen}
+        onOpenChange={setPaletteOpen}
+        items={paletteItems}
+        placeholder="Search components..."
+      />
       <Toaster />
     </div>
   );
