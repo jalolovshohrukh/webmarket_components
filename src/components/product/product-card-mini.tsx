@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { formatPrice, type Product } from "@/types/product";
 
@@ -99,4 +100,34 @@ const ProductCardMini = React.forwardRef<HTMLDivElement, ProductCardMiniProps>(
 );
 ProductCardMini.displayName = "ProductCardMini";
 
-export { ProductCardMini };
+export interface ProductCardMiniSkeletonProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  bordered?: boolean;
+}
+
+const ProductCardMiniSkeleton = React.forwardRef<
+  HTMLDivElement,
+  ProductCardMiniSkeletonProps
+>(({ bordered = true, className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "flex items-center gap-3 rounded-lg p-2",
+      bordered && "border border-gray-100 bg-card",
+      className
+    )}
+    aria-busy="true"
+    aria-live="polite"
+    {...props}
+  >
+    <Skeleton className="size-12 shrink-0 rounded-md sm:size-14" />
+    <div className="min-w-0 flex-1 space-y-1.5">
+      <Skeleton className="h-3 w-4/5" />
+      <Skeleton className="h-3 w-1/3" />
+    </div>
+    <Skeleton className="size-8 shrink-0 rounded-full" />
+  </div>
+));
+ProductCardMiniSkeleton.displayName = "ProductCardMiniSkeleton";
+
+export { ProductCardMini, ProductCardMiniSkeleton };

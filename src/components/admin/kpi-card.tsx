@@ -1,6 +1,7 @@
 import * as React from "react";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 export interface KpiCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -112,4 +113,38 @@ const KpiCard = React.forwardRef<HTMLDivElement, KpiCardProps>(
 );
 KpiCard.displayName = "KpiCard";
 
-export { KpiCard };
+export interface KpiCardSkeletonProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  withTrail?: boolean;
+  trailHeight?: number;
+}
+
+const KpiCardSkeleton = React.forwardRef<HTMLDivElement, KpiCardSkeletonProps>(
+  ({ withTrail, trailHeight = 64, className, ...props }, ref) => (
+    <Card
+      ref={ref}
+      className={cn("p-4 md:p-5", className)}
+      aria-busy="true"
+      aria-live="polite"
+      {...props}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 space-y-2">
+          <Skeleton className="h-3 w-20" />
+          <Skeleton className="h-8 w-28" />
+          <Skeleton className="h-3 w-24" />
+        </div>
+        <Skeleton className="size-11 shrink-0 rounded-lg" />
+      </div>
+      {withTrail && (
+        <Skeleton
+          className="mt-3 w-full rounded-md"
+          style={{ height: trailHeight }}
+        />
+      )}
+    </Card>
+  )
+);
+KpiCardSkeleton.displayName = "KpiCardSkeleton";
+
+export { KpiCard, KpiCardSkeleton };

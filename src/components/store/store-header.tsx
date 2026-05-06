@@ -11,6 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Rating } from "@/components/ui/rating";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 export interface StoreHeaderProps extends React.HTMLAttributes<HTMLElement> {
@@ -204,4 +205,48 @@ function Stat({
   );
 }
 
-export { StoreHeader };
+const StoreHeaderSkeleton = React.forwardRef<
+  HTMLElement,
+  React.HTMLAttributes<HTMLElement>
+>(({ className, ...props }, ref) => (
+  <section
+    ref={ref}
+    className={cn(
+      "overflow-hidden rounded-xl border border-gray-100 bg-card",
+      className
+    )}
+    aria-busy="true"
+    aria-live="polite"
+    {...props}
+  >
+    <Skeleton className="h-32 w-full rounded-none sm:h-40" />
+    <div className="px-4 pb-4 sm:px-6 sm:pb-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-5">
+        <Skeleton className="-mt-10 size-20 shrink-0 rounded-full ring-4 ring-card sm:-mt-14 sm:size-24" />
+        <div className="min-w-0 flex-1 space-y-2">
+          <Skeleton className="h-7 w-2/3" />
+          <Skeleton className="h-4 w-full max-w-md" />
+          <Skeleton className="h-4 w-1/3" />
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Skeleton className="h-10 w-28 rounded-md" />
+          <Skeleton className="h-10 w-28 rounded-md" />
+        </div>
+      </div>
+      <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-6">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-2.5">
+            <Skeleton className="size-9 shrink-0 rounded-md" />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <Skeleton className="h-2.5 w-1/2" />
+              <Skeleton className="h-3.5 w-2/3" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+));
+StoreHeaderSkeleton.displayName = "StoreHeaderSkeleton";
+
+export { StoreHeader, StoreHeaderSkeleton };

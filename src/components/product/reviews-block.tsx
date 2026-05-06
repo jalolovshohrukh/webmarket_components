@@ -5,6 +5,7 @@ import { Rating } from "@/components/ui/rating";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 export interface Review {
@@ -181,4 +182,65 @@ function ReviewItem({ review }: { review: Review }) {
   );
 }
 
-export { ReviewsBlock, ReviewItem };
+export interface ReviewsBlockSkeletonProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  reviewCount?: number;
+}
+
+const ReviewsBlockSkeleton = React.forwardRef<
+  HTMLDivElement,
+  ReviewsBlockSkeletonProps
+>(({ reviewCount = 2, className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("space-y-6", className)}
+    aria-busy="true"
+    aria-live="polite"
+    {...props}
+  >
+    <div className="grid gap-6 md:grid-cols-[260px_1fr]">
+      <Card className="p-5">
+        <Skeleton className="mx-auto h-12 w-20" />
+        <Skeleton className="mx-auto mt-3 h-4 w-32" />
+        <Skeleton className="mx-auto mt-2 h-3 w-40" />
+        <Skeleton className="mt-4 h-9 w-full rounded-md" />
+      </Card>
+      <div className="flex flex-col justify-center gap-1.5">
+        {[5, 4, 3, 2, 1].map((s) => (
+          <div key={s} className="flex items-center gap-3">
+            <Skeleton className="h-3 w-12" />
+            <Skeleton className="h-2 flex-1 rounded-full" />
+            <Skeleton className="h-3 w-12" />
+          </div>
+        ))}
+      </div>
+    </div>
+    <ul className="space-y-4">
+      {Array.from({ length: reviewCount }).map((_, i) => (
+        <li key={i}>
+          <Card className="p-4">
+            <div className="flex items-start gap-3">
+              <Skeleton className="size-10 shrink-0 rounded-full" />
+              <div className="min-w-0 flex-1 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-4 w-20 rounded-md" />
+                </div>
+                <Skeleton className="h-3 w-28" />
+                <Skeleton className="h-4 w-3/5" />
+                <div className="space-y-1.5">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-3/4" />
+                </div>
+              </div>
+            </div>
+          </Card>
+        </li>
+      ))}
+    </ul>
+  </div>
+));
+ReviewsBlockSkeleton.displayName = "ReviewsBlockSkeleton";
+
+export { ReviewsBlock, ReviewsBlockSkeleton, ReviewItem };

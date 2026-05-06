@@ -1,6 +1,6 @@
 # Webmarket Components
 
-A reusable, accessible, responsive React component kit. **142 components**, designed to be **owned by your codebase** — copy, paste, modify. No runtime library, no opinionated abstractions to fight.
+A reusable, accessible, responsive React component kit. **151 components** (including skeletons), designed to be **owned by your codebase** — copy, paste, modify. No runtime library, no opinionated abstractions to fight.
 
 Built with **React 18 + Vite + TypeScript + Tailwind v3 + Radix UI primitives**, themed via HSL CSS variable tokens (light + dark mode). Mobile-audited at 375px — zero horizontal overflow on any page.
 

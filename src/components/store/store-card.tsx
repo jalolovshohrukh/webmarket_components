@@ -3,6 +3,7 @@ import { ChevronRight, MapPin, Package, ShieldCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Rating } from "@/components/ui/rating";
 import { Tag } from "@/components/ui/tag";
 import { cn } from "@/lib/utils";
@@ -166,5 +167,48 @@ const StoreCard = React.forwardRef<HTMLDivElement, StoreCardProps>(
 );
 StoreCard.displayName = "StoreCard";
 
-export { StoreCard };
+export interface StoreCardSkeletonProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "compact";
+}
+
+const StoreCardSkeleton = React.forwardRef<
+  HTMLDivElement,
+  StoreCardSkeletonProps
+>(({ variant = "default", className, ...props }, ref) => {
+  const compact = variant === "compact";
+  return (
+    <Card
+      ref={ref}
+      className={cn("overflow-hidden", className)}
+      aria-busy="true"
+      aria-live="polite"
+      {...props}
+    >
+      {!compact && <Skeleton className="h-20 w-full rounded-none" />}
+      <div className={cn("p-4", !compact && "-mt-7")}>
+        <div className="flex items-start gap-3">
+          <Skeleton
+            className={cn(
+              "shrink-0 rounded-full",
+              compact ? "size-10" : "size-14 ring-4 ring-card"
+            )}
+          />
+          <div className="min-w-0 flex-1 space-y-2 pt-1">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-1/3" />
+          </div>
+        </div>
+        <div className="mt-4 flex items-center gap-2">
+          <Skeleton className="h-8 flex-1 rounded-md" />
+          <Skeleton className="h-8 w-20 rounded-md" />
+        </div>
+      </div>
+    </Card>
+  );
+});
+StoreCardSkeleton.displayName = "StoreCardSkeleton";
+
+export { StoreCard, StoreCardSkeleton };
 export { type StoreSummary as StoreCardData };

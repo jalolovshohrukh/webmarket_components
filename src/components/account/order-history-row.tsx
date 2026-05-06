@@ -3,6 +3,7 @@ import { ChevronRight, Package } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 export type OrderStatus =
@@ -113,4 +114,40 @@ function OrderHistoryRow({
   );
 }
 
-export { OrderHistoryRow };
+const OrderHistoryRowSkeleton = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <Card
+    ref={ref}
+    className={cn("p-4", className)}
+    aria-busy="true"
+    aria-live="polite"
+    {...props}
+  >
+    <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex items-center gap-3">
+        <Skeleton className="size-9 shrink-0 rounded-full" />
+        <div className="space-y-1.5">
+          <Skeleton className="h-3 w-44" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-5 w-16 rounded-md" />
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Skeleton key={i} className="size-12 rounded-md" />
+        ))}
+      </div>
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-8 w-20 rounded-md" />
+        <Skeleton className="h-8 w-16 rounded-md" />
+      </div>
+    </div>
+  </Card>
+));
+OrderHistoryRowSkeleton.displayName = "OrderHistoryRowSkeleton";
+
+export { OrderHistoryRow, OrderHistoryRowSkeleton };

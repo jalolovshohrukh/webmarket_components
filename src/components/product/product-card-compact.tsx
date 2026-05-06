@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatPrice, type Product } from "@/types/product";
@@ -100,4 +101,24 @@ const ProductCardCompact = React.forwardRef<
 );
 ProductCardCompact.displayName = "ProductCardCompact";
 
-export { ProductCardCompact };
+const ProductCardCompactSkeleton = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <Card
+    ref={ref}
+    className={cn("flex flex-col", className)}
+    aria-busy="true"
+    aria-live="polite"
+    {...props}
+  >
+    <Skeleton className="aspect-square w-full rounded-none" />
+    <div className="flex flex-col gap-1.5 p-2.5">
+      <Skeleton className="h-3 w-full" />
+      <Skeleton className="h-3.5 w-1/2" />
+    </div>
+  </Card>
+));
+ProductCardCompactSkeleton.displayName = "ProductCardCompactSkeleton";
+
+export { ProductCardCompact, ProductCardCompactSkeleton };

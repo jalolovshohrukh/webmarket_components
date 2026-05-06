@@ -2,6 +2,7 @@ import * as React from "react";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sparkline } from "@/components/charts/sparkline";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
 export interface LeaderboardEntry {
@@ -129,4 +130,58 @@ function LeaderboardTable({
   );
 }
 
-export { LeaderboardTable };
+export interface LeaderboardTableSkeletonProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  rows?: number;
+  withSparkline?: boolean;
+  withTitle?: boolean;
+}
+
+const LeaderboardTableSkeleton = React.forwardRef<
+  HTMLDivElement,
+  LeaderboardTableSkeletonProps
+>(
+  (
+    { rows = 5, withSparkline = true, withTitle = true, className, ...props },
+    ref
+  ) => (
+    <div
+      ref={ref}
+      className={cn(
+        "rounded-xl border border-gray-100 bg-card",
+        className
+      )}
+      aria-busy="true"
+      aria-live="polite"
+      {...props}
+    >
+      {withTitle && (
+        <header className="border-b border-gray-100 px-4 py-3">
+          <Skeleton className="h-4 w-2/5" />
+        </header>
+      )}
+      <ul className="divide-y divide-gray-100">
+        {Array.from({ length: rows }).map((_, i) => (
+          <li key={i} className="flex items-center gap-3 px-4 py-3">
+            <Skeleton className="size-3 shrink-0 rounded" />
+            <Skeleton className="size-8 shrink-0 rounded-full" />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <Skeleton className="h-3 w-2/5" />
+              <Skeleton className="h-2.5 w-1/4" />
+            </div>
+            {withSparkline && (
+              <Skeleton className="hidden h-6 w-24 rounded-sm sm:block" />
+            )}
+            <div className="space-y-1.5 text-right">
+              <Skeleton className="ml-auto h-3 w-16" />
+              <Skeleton className="ml-auto h-2.5 w-10" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+);
+LeaderboardTableSkeleton.displayName = "LeaderboardTableSkeleton";
+
+export { LeaderboardTable, LeaderboardTableSkeleton };
