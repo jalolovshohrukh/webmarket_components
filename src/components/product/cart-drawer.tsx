@@ -68,8 +68,8 @@ const CartDrawer = React.forwardRef<HTMLDivElement, CartDrawerProps>(
       <Sheet open={open} onOpenChange={onOpenChange}>
         {trigger && <SheetTrigger asChild>{trigger}</SheetTrigger>}
         <SheetContent
-          side="right"
-          className="w-full sm:max-w-md p-0 flex flex-col"
+          side="center"
+          className="w-[94vw] sm:max-w-lg max-h-[88vh] p-0 flex flex-col"
         >
           <div className="px-5 pt-5 pb-3 flex items-center justify-between border-b border-gray-200">
             <SheetHeader>

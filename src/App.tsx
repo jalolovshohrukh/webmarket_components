@@ -1497,31 +1497,36 @@ function SheetPage() {
     <article>
       <PageHeader
         title="Sheet"
-        description="Slide-in panel. Pick the side: top, right, bottom, or left."
+        description="Modal panel. Default `center` pops from the middle (zoom in); `top`/`right`/`bottom`/`left` slide from that edge for nav drawers."
       />
       <Demo
         preview={
           <div className="flex flex-wrap gap-2">
-            {(["left", "right", "top", "bottom"] as const).map((side) => (
-              <Sheet key={side}>
-                <SheetTrigger asChild>
-                  <Button variant="primaryOutlined">From {side}</Button>
-                </SheetTrigger>
-                <SheetContent side={side}>
-                  <SheetHeader>
-                    <SheetTitle>Side: {side}</SheetTitle>
-                  </SheetHeader>
-                  <p className="text-p1 text-text-secondary mt-2">
-                    Sheet content goes here.
-                  </p>
-                </SheetContent>
-              </Sheet>
-            ))}
+            {(["center", "left", "right", "top", "bottom"] as const).map(
+              (side) => (
+                <Sheet key={side}>
+                  <SheetTrigger asChild>
+                    <Button variant="primaryOutlined">
+                      {side === "center" ? "Centered" : `From ${side}`}
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side={side}>
+                    <SheetHeader>
+                      <SheetTitle>Side: {side}</SheetTitle>
+                    </SheetHeader>
+                    <p className="text-p1 text-text-secondary mt-2">
+                      Sheet content goes here.
+                    </p>
+                  </SheetContent>
+                </Sheet>
+              )
+            )}
           </div>
         }
         code={`<Sheet>
   <SheetTrigger asChild><Button>Open</Button></SheetTrigger>
-  <SheetContent side="right">
+  {/* default: side="center" — pops from the middle */}
+  <SheetContent>
     <SheetHeader><SheetTitle>Cart</SheetTitle></SheetHeader>
   </SheetContent>
 </Sheet>`}
