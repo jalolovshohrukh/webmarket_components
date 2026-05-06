@@ -1,6 +1,6 @@
 # Webmarket Components
 
-A reusable, accessible, responsive React component kit. **121 components**, designed to be **owned by your codebase** — copy, paste, modify. No runtime library, no opinionated abstractions to fight.
+A reusable, accessible, responsive React component kit. **124 components**, designed to be **owned by your codebase** — copy, paste, modify. No runtime library, no opinionated abstractions to fight.
 
 Built with **React 18 + Vite + TypeScript + Tailwind v3 + Radix UI primitives**, themed via HSL CSS variable tokens (light + dark mode). Mobile-audited at 375px — zero horizontal overflow on any page.
 
@@ -14,6 +14,7 @@ Built with **React 18 + Vite + TypeScript + Tailwind v3 + Radix UI primitives**,
 | **Layout** | SiteHeader · SiteFooter · MainNav · SideNav · MegaMenu · MobileNavBar · HeroBanner |
 | **Product** | ProductCard · ProductCardList · ProductCardCompact · ProductCardMini · ProductGrid · ProductGallery · VariantPicker · StockBadge · DeliveryCard · SellerCard · ReviewsBlock · ReviewForm · QABlock · FrequentlyBought · ComparisonTable · SpecTable · FilterSidebar |
 | **Marketplace** | CategoryTileGrid · PromoBanner · ProductStrip · SortDropdown · ViewToggle · ActiveFiltersBar |
+| **Store** | StoreCard · StoreHeader · StoreSection |
 | **Cart** | CartLineItem · EmptyCart · CouponInput · OrderSummary |
 | **Checkout** | CheckoutStepper · AddressCard · DeliveryMethodPicker · PaymentMethodPicker · OrderConfirmation |
 | **Account** | AccountDropdown · NotificationBell · OrderHistoryRow · OrderTracking · AddressBook · LoyaltyCard · WishlistGrid |

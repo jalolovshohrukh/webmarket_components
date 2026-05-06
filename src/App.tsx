@@ -133,6 +133,9 @@ import { SearchWithSuggestions } from "@/components/marketplace/search-with-sugg
 import { ProductCardList } from "@/components/product/product-card-list";
 import { ProductCardCompact } from "@/components/product/product-card-compact";
 import { ProductCardMini } from "@/components/product/product-card-mini";
+import { StoreCard } from "@/components/store/store-card";
+import { StoreHeader } from "@/components/store/store-header";
+import { StoreSection } from "@/components/store/store-section";
 import { VariantPicker } from "@/components/product/variant-picker";
 import { StockBadge } from "@/components/product/stock-badge";
 import { DeliveryCard } from "@/components/product/delivery-card";
@@ -3729,6 +3732,171 @@ function SearchWithSuggestionsPage() {
 // Product detail doc pages
 // ---------------------------------------------------------------------------
 
+const sampleStore = {
+  name: "Webmarket Audio",
+  href: "#shop",
+  logoUrl:
+    "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=200&q=70",
+  rating: 4.8,
+  reviewCount: 2340,
+  productCount: 142,
+  followerCount: 18420,
+  joinedYear: 2021,
+  shipsFrom: "California, US",
+  tagline: "Premium audio gear with free shipping",
+  verified: true,
+  tags: ["Free shipping", "Fast dispatch", "Authorized dealer"],
+};
+
+function StoreCardPage() {
+  const [following, setFollowing] = React.useState<Set<string>>(new Set(["a"]));
+  return (
+    <article>
+      <PageHeader
+        title="Store card"
+        description="Directory tile for a marketplace seller. Banner + logo + rating + tags + Visit / Follow CTAs. Drop in a grid for an All shops page or stand-alone in a sidebar."
+      />
+      <Preview centered={false}>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            { ...sampleStore, id: "a", name: "Webmarket Audio" },
+            {
+              ...sampleStore,
+              id: "b",
+              name: "Atelier Levi",
+              tagline: "Heritage leather goods, made to last",
+              rating: 4.9,
+              reviewCount: 1180,
+              productCount: 64,
+              shipsFrom: "Italy",
+              tags: ["Handmade", "EU shipping"],
+            },
+            {
+              ...sampleStore,
+              id: "c",
+              name: "Greenhouse Co.",
+              tagline: "Plants, planters, and potting essentials",
+              rating: 4.6,
+              reviewCount: 412,
+              productCount: 220,
+              shipsFrom: "Tajikistan",
+              verified: false,
+              tags: ["Plants", "Local"],
+            },
+          ].map((s) => (
+            <StoreCard
+              key={s.id}
+              store={s}
+              isFollowing={following.has(s.id)}
+              onFollow={(store) =>
+                setFollowing((prev) => {
+                  const next = new Set(prev);
+                  if (next.has(store.id)) next.delete(store.id);
+                  else next.add(store.id);
+                  return next;
+                })
+              }
+            />
+          ))}
+        </div>
+      </Preview>
+      <div className="mt-6">
+        <h3 className="text-h5 font-semibold text-text-primary">
+          Compact variant — no banner
+        </h3>
+        <Preview centered={false} className="mt-2">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <StoreCard
+              variant="compact"
+              store={{ ...sampleStore, id: "compact-a" }}
+            />
+            <StoreCard
+              variant="compact"
+              store={{
+                ...sampleStore,
+                id: "compact-b",
+                name: "Nimbus Beauty",
+                tagline: "Clean beauty, evidence-based",
+                tags: ["Cruelty-free", "Vegan"],
+              }}
+            />
+          </div>
+        </Preview>
+      </div>
+    </article>
+  );
+}
+
+function StoreHeaderPage() {
+  const [following, setFollowing] = React.useState(false);
+  return (
+    <article>
+      <PageHeader
+        title="Store header"
+        description="Top-of-page header for a store / seller profile. Banner + logo + primary actions + stats. Pass tabs as children to dock a sub-nav directly below."
+      />
+      <Preview centered={false}>
+        <StoreHeader
+          name={sampleStore.name}
+          tagline={sampleStore.tagline}
+          logoUrl={sampleStore.logoUrl}
+          rating={sampleStore.rating}
+          reviewCount={sampleStore.reviewCount}
+          productCount={sampleStore.productCount}
+          followerCount={sampleStore.followerCount}
+          shipsFrom={sampleStore.shipsFrom}
+          joinedYear={sampleStore.joinedYear}
+          verified
+          isFollowing={following}
+          onFollow={() => setFollowing((f) => !f)}
+          onMessage={() => undefined}
+        >
+          <div className="border-t border-gray-100">
+            <Tabs defaultValue="catalog" className="w-full">
+              <TabsList className="mx-4 my-2 sm:mx-6">
+                <TabsTrigger value="catalog">Catalog</TabsTrigger>
+                <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                <TabsTrigger value="about">About</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        </StoreHeader>
+      </Preview>
+    </article>
+  );
+}
+
+function StoreSectionPage() {
+  return (
+    <article>
+      <PageHeader
+        title="Store section"
+        description="Homepage feed unit for 'shop this store'. Compact store header docked above whatever product presentation you pass as children — typically a ProductStrip or a grid of ProductCardCompact."
+      />
+      <Preview centered={false}>
+        <div className="space-y-4">
+          <StoreSection
+            storeName={sampleStore.name}
+            href="#shop"
+            logoUrl={sampleStore.logoUrl}
+            rating={sampleStore.rating}
+            reviewCount={sampleStore.reviewCount}
+            tagline={sampleStore.tagline}
+            verified
+            eyebrow="Featured store"
+          >
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              {sampleProducts.map((p) => (
+                <ProductCardCompact key={p.id} product={p} />
+              ))}
+            </div>
+          </StoreSection>
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
 function ProductCardCompactPage() {
   return (
     <article>
@@ -5746,6 +5914,14 @@ const sections: DocSection[] = [
       { id: "sort-dropdown", title: "Sort dropdown", Component: SortDropdownPage },
       { id: "view-toggle", title: "View toggle", Component: ViewTogglePage },
       { id: "active-filters-bar", title: "Active filters bar", Component: ActiveFiltersBarPage },
+    ],
+  },
+  {
+    title: "Store",
+    pages: [
+      { id: "store-card", title: "Store card", Component: StoreCardPage },
+      { id: "store-header", title: "Store header (profile)", Component: StoreHeaderPage },
+      { id: "store-section", title: "Store section (feed)", Component: StoreSectionPage },
     ],
   },
   {
