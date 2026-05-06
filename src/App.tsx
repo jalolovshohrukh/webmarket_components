@@ -193,6 +193,7 @@ import {
   type CommandItem,
 } from "@/components/ui/command-palette";
 import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
+import { Seo, breadcrumbJsonLd } from "@/components/seo/seo";
 import {
   Heart as HeartIcon,
   Home as HomeIcon,
@@ -397,7 +398,7 @@ function ShowcaseTile({
   return (
     <div
       className={cn(
-        "min-w-0 overflow-hidden rounded-2xl border border-gray-200 bg-card p-5 shadow-sm",
+        "min-w-0 overflow-hidden rounded-2xl border border-gray-100 bg-card p-5 shadow-sm",
         className
       )}
     >
@@ -980,7 +981,7 @@ function IntroductionPage() {
         </div>
       </div>
 
-      <footer className="rounded-2xl border border-gray-200 bg-card p-6">
+      <footer className="rounded-2xl border border-gray-100 bg-card p-6">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[12px] text-text-tertiary">
           <span>
             <strong className="text-text-primary">{flatPages.length}</strong>{" "}
@@ -4559,6 +4560,135 @@ function ForgotPasswordFormPage() {
   );
 }
 
+function SeoPage() {
+  return (
+    <article>
+      <PageHeader
+        title="SEO &amp; structured data"
+        description="A headless `<Seo />` helper that imperatively syncs <title>, meta description, canonical, Open Graph, Twitter cards, robots, and JSON-LD as props change. Plus typed builders for Product / Breadcrumb / Organization JSON-LD."
+      />
+
+      <div className="space-y-6">
+        <section>
+          <h3 className="text-h5 font-semibold text-text-primary">
+            What it does
+          </h3>
+          <p className="mt-2 text-p1 text-text-secondary">
+            <code className="rounded bg-gray-100 px-1.5 py-0.5 text-[12px] font-mono">
+              {"<Seo />"}
+            </code>{" "}
+            renders nothing — it patches{" "}
+            <code className="rounded bg-gray-100 px-1.5 py-0.5 text-[12px] font-mono">
+              document.head
+            </code>{" "}
+            via <code className="rounded bg-gray-100 px-1.5 py-0.5 text-[12px] font-mono">useEffect</code>.
+            Drop one near the root of every route. Pass{" "}
+            <code className="rounded bg-gray-100 px-1.5 py-0.5 text-[12px] font-mono">jsonLd</code>{" "}
+            to inject Schema.org structured data; use the typed builders for
+            Product / Breadcrumb / Organization.
+          </p>
+        </section>
+
+        <section>
+          <h3 className="text-h5 font-semibold text-text-primary">
+            Per-route example
+          </h3>
+          <Code>{`import { Seo, productJsonLd } from "@/components/seo/seo";
+
+function ProductPage({ product }) {
+  return (
+    <>
+      <Seo
+        title={product.title}
+        titleTemplate="Webmarket"
+        description={product.description}
+        canonical={\`https://webmarket.tj/product/\${product.id}\`}
+        image={product.imageUrl}
+        imageAlt={product.title}
+        type="product"
+        jsonLd={productJsonLd({
+          name: product.title,
+          description: product.description,
+          image: product.imageUrl,
+          sku: product.id,
+          brand: "Webmarket",
+          price: product.price.amount,
+          priceCurrency: "USD",
+          availability: "InStock",
+          rating: { value: 4.6, count: 2340 },
+          url: window.location.href,
+        })}
+      />
+      {/* page UI */}
+    </>
+  );
+}`}</Code>
+        </section>
+
+        <section>
+          <h3 className="text-h5 font-semibold text-text-primary">
+            Caveats
+          </h3>
+          <p className="mt-2 text-p1 text-text-secondary">
+            This is a runtime DOM patch. It works for in-app navigation, link
+            previews opened from your own app, and crawlers that execute JS
+            (Googlebot does — most others don&apos;t). For full crawler
+            coverage, also pre-render or SSR your routes (Vite SSG, Next.js,
+            Astro, etc.). Static fallbacks live in{" "}
+            <code className="rounded bg-gray-100 px-1.5 py-0.5 text-[12px] font-mono">
+              index.html
+            </code>{" "}
+            so an unrendered first byte still has sane meta tags.
+          </p>
+        </section>
+
+        <section>
+          <h3 className="text-h5 font-semibold text-text-primary">
+            JSON-LD builders
+          </h3>
+          <Code>{`// Product detail page
+<Seo jsonLd={productJsonLd({ ... })} />
+
+// Catalog page with breadcrumb
+<Seo
+  jsonLd={[
+    breadcrumbJsonLd({
+      items: [
+        { name: "Home",        url: "https://example.com/" },
+        { name: "Electronics", url: "https://example.com/electronics" },
+        { name: "Audio",       url: "https://example.com/electronics/audio" },
+      ],
+    }),
+    organizationJsonLd({
+      name: "Webmarket",
+      url: "https://webmarket.tj",
+      logo: "https://webmarket.tj/logo.png",
+      sameAs: ["https://t.me/webmarket", "https://instagram.com/webmarket"],
+    }),
+  ]}
+/>`}</Code>
+        </section>
+      </div>
+
+      {/* live demo: this Seo updates the page title while you're on this doc */}
+      <Seo
+        title="SEO & structured data"
+        titleTemplate="Webmarket Components"
+        description="Headless Seo helper for SPA routes: title, description, OG, Twitter, canonical, robots, JSON-LD."
+        canonical={
+          typeof window !== "undefined" ? window.location.href : undefined
+        }
+        jsonLd={breadcrumbJsonLd({
+          items: [
+            { name: "Webmarket Components", url: "https://github.com/jalolovshohrukh/webmarket_components" },
+            { name: "SEO", url: "https://github.com/jalolovshohrukh/webmarket_components#seo" },
+          ],
+        })}
+      />
+    </article>
+  );
+}
+
 function MobileNavBarPage() {
   const [active, setActive] = React.useState("home");
   return (
@@ -5425,6 +5555,7 @@ const sections: DocSection[] = [
         fullBleed: true,
       },
       { id: "tokens", title: "Design tokens", Component: TokensPage },
+      { id: "seo", title: "SEO & meta", Component: SeoPage },
     ],
   },
   {

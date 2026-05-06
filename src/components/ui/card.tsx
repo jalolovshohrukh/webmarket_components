@@ -13,7 +13,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-xl border border-gray-200 bg-card text-card-foreground shadow-sm overflow-hidden",
+      "rounded-xl border border-gray-100 bg-card text-card-foreground shadow-sm overflow-hidden",
       className
     )}
     {...props}
@@ -88,7 +88,7 @@ const CardSkeleton = React.forwardRef<HTMLDivElement, CardSkeletonProps>(
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border border-gray-200 bg-card overflow-hidden",
+        "rounded-xl border border-gray-100 bg-card overflow-hidden",
         className
       )}
       aria-busy="true"

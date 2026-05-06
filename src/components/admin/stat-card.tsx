@@ -20,7 +20,7 @@ const StatCard = React.forwardRef<HTMLDivElement, StatCardProps>(
     <div
       ref={ref}
       className={cn(
-        "min-w-0 rounded-lg border border-gray-200 bg-card p-3",
+        "min-w-0 rounded-lg bg-muted/40 p-3",
         className
       )}
       {...props}

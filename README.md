@@ -1,8 +1,8 @@
 # Webmarket Components
 
-A reusable, accessible, responsive React component kit. **117 components**, designed to be **owned by your codebase** — copy, paste, modify. No runtime library, no opinionated abstractions to fight.
+A reusable, accessible, responsive React component kit. **119 components**, designed to be **owned by your codebase** — copy, paste, modify. No runtime library, no opinionated abstractions to fight.
 
-Built with **React 18 + Vite + TypeScript + Tailwind v3 + Radix UI primitives**, themed via HSL CSS variable tokens (light + dark mode).
+Built with **React 18 + Vite + TypeScript + Tailwind v3 + Radix UI primitives**, themed via HSL CSS variable tokens (light + dark mode). Mobile-audited at 375px — zero horizontal overflow on any page.
 
 ## What's in it
 
@@ -11,7 +11,7 @@ Built with **React 18 + Vite + TypeScript + Tailwind v3 + Radix UI primitives**,
 | **Forms** | Button · Input · FloatingInput · Textarea · Select · Label · Checkbox · RadioGroup · Switch · Slider · NumberInput · QuantityStepper · ToggleGroup · ColorSwatch · SizeSelector · SearchBar · SearchWithSuggestions · Autocomplete · PhoneInput · OtpInput |
 | **Display** | Card · Badge · Tag · Avatar · Rating · Price · Breadcrumb · Pagination · Accordion · Separator · Timeline · Skeleton · Spinner · EmptyState |
 | **Overlays** | Dialog · Sheet · Popover · Toast · DropdownMenu · Tabs · Tooltip · QuickView · CartDrawer |
-| **Layout** | SiteHeader · SiteFooter · MainNav · SideNav · MegaMenu · HeroBanner |
+| **Layout** | SiteHeader · SiteFooter · MainNav · SideNav · MegaMenu · MobileNavBar · HeroBanner |
 | **Product** | ProductCard · ProductCardList · ProductGrid · ProductGallery · VariantPicker · StockBadge · DeliveryCard · SellerCard · ReviewsBlock · ReviewForm · QABlock · FrequentlyBought · ComparisonTable · SpecTable · FilterSidebar |
 | **Marketplace** | CategoryTileGrid · PromoBanner · ProductStrip · SortDropdown · ViewToggle · ActiveFiltersBar |
 | **Cart** | CartLineItem · EmptyCart · CouponInput · OrderSummary |
@@ -62,6 +62,24 @@ That's it. Each file is self-contained: forwardRef, named exports, JSDoc-free, n
 - Brand orange `#fe6a00` is `--primary` and `--chart-1`
 - 8-step chart palette (`--chart-1` through `--chart-8`) — orange / sky / emerald / violet / amber / rose / cyan / lime
 - Every chart and component uses these tokens via `hsl(var(--chart-1))` etc., so dark mode and rebranding are configuration-only
+
+## SEO
+
+There's a headless `<Seo />` helper at [src/components/seo/seo.tsx](src/components/seo/seo.tsx) that imperatively syncs `document.title`, `meta[name=description]`, canonical URL, Open Graph tags, Twitter cards, robots, and JSON-LD as props change — drop one near the root of every route. Typed builders ship for `productJsonLd`, `breadcrumbJsonLd`, and `organizationJsonLd`.
+
+```tsx
+<Seo
+  title={product.title}
+  titleTemplate="Webmarket"
+  description={product.description}
+  canonical={`https://webmarket.tj/product/${product.id}`}
+  image={product.imageUrl}
+  type="product"
+  jsonLd={productJsonLd({ name: product.title, price: 249, priceCurrency: "USD", availability: "InStock" })}
+/>
+```
+
+This is a runtime DOM patch — perfect for SPA navigation and crawlers that execute JS (Googlebot does). For full crawler coverage, also pre-render or SSR your routes (Vite SSG, Next.js, Astro). Static fallbacks live in `index.html` so the unrendered first byte still has sane meta.
 
 ## License
 
