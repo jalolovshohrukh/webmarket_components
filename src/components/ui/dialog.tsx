@@ -32,12 +32,15 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-50 grid gap-4 bg-background shadow-lg duration-200",
+        "fixed z-50 grid gap-4 bg-background shadow-lg",
         "inset-0 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2",
         "sm:max-w-lg sm:w-full sm:rounded-xl sm:border sm:border-gray-200",
         "p-5 sm:p-6",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95",
+        // Mobile (< sm): full-screen with fade.
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-200",
+        // sm+: centered-zoom keyframe that preserves the translate(-50%, -50%)
+        // so the modal scales from its own center.
+        "sm:data-[state=open]:animate-modal-in sm:data-[state=closed]:animate-modal-out",
         className
       )}
       {...props}

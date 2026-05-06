@@ -138,9 +138,10 @@ const CommandPalette = React.forwardRef<HTMLDivElement, CommandPaletteProps>(
             ref={ref}
             className={cn(
               "fixed left-1/2 top-[18%] z-50 w-[92vw] max-w-xl -translate-x-1/2 overflow-hidden rounded-xl border border-gray-200 bg-background shadow-2xl",
-              "data-[state=open]:animate-in data-[state=closed]:animate-out",
-              "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-              "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+              // Custom keyframe that preserves -translate-x-1/2 while scaling,
+              // so the palette grows from its own center instead of drifting
+              // horizontally.
+              "data-[state=open]:animate-palette-in data-[state=closed]:animate-palette-out",
               className
             )}
           >
