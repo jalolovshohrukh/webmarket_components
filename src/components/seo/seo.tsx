@@ -10,6 +10,26 @@ import * as React from "react";
  * JS. For real indexing you also need server-side rendering or a build-time
  * pre-render step (Vite SSG, Next.js, Astro, etc.). See README for guidance.
  */
+export interface SeoProductMeta {
+  /** og:price:amount + product:price:amount */
+  price: number | string;
+  /** ISO currency code: USD, EUR, RUB, TJS, etc. */
+  priceCurrency: string;
+  /** product:availability — "in stock" / "out of stock" / "preorder". */
+  availability?:
+    | "in stock"
+    | "out of stock"
+    | "preorder"
+    | "backorder"
+    | "discontinued";
+  /** product:condition — "new" / "used" / "refurbished". */
+  condition?: "new" | "used" | "refurbished";
+  /** product:retailer_item_id / og:product:item_id */
+  retailerItemId?: string;
+  /** og:brand */
+  brand?: string;
+}
+
 export interface SeoProps {
   title?: string;
   /** Appended after `title`, separated by ` · `. */
@@ -32,6 +52,8 @@ export interface SeoProps {
   jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
   /** Extra meta tags as `{ name?, property?, content }`. */
   meta?: Array<{ name?: string; property?: string; content: string }>;
+  /** Sets og:price / product:* extension tags. Use with `type="product"`. */
+  product?: SeoProductMeta;
 }
 
 const MANAGED_ATTR = "data-seo-managed";
@@ -96,6 +118,7 @@ function Seo({
   themeColor,
   jsonLd,
   meta,
+  product,
 }: SeoProps) {
   React.useEffect(() => {
     if (lang) document.documentElement.lang = lang;
@@ -197,6 +220,57 @@ function Seo({
       }
     }
 
+    if (product) {
+      const priceStr =
+        typeof product.price === "number"
+          ? product.price.toFixed(2)
+          : product.price;
+      ensureMeta('meta[property="og:price:amount"]', {
+        property: "og:price:amount",
+        content: priceStr,
+      });
+      ensureMeta('meta[property="og:price:currency"]', {
+        property: "og:price:currency",
+        content: product.priceCurrency,
+      });
+      ensureMeta('meta[property="product:price:amount"]', {
+        property: "product:price:amount",
+        content: priceStr,
+      });
+      ensureMeta('meta[property="product:price:currency"]', {
+        property: "product:price:currency",
+        content: product.priceCurrency,
+      });
+      if (product.availability) {
+        ensureMeta('meta[property="product:availability"]', {
+          property: "product:availability",
+          content: product.availability,
+        });
+      }
+      if (product.condition) {
+        ensureMeta('meta[property="product:condition"]', {
+          property: "product:condition",
+          content: product.condition,
+        });
+      }
+      if (product.retailerItemId) {
+        ensureMeta('meta[property="product:retailer_item_id"]', {
+          property: "product:retailer_item_id",
+          content: product.retailerItemId,
+        });
+      }
+      if (product.brand) {
+        ensureMeta('meta[property="og:brand"]', {
+          property: "og:brand",
+          content: product.brand,
+        });
+        ensureMeta('meta[property="product:brand"]', {
+          property: "product:brand",
+          content: product.brand,
+        });
+      }
+    }
+
     setJsonLd(jsonLd);
   }, [
     title,
@@ -211,6 +285,7 @@ function Seo({
     themeColor,
     jsonLd,
     meta,
+    product,
   ]);
 
   return null;
@@ -291,6 +366,61 @@ export function organizationJsonLd(p: OrganizationJsonLdInput) {
     url: p.url,
     logo: p.logo,
     sameAs: p.sameAs,
+  };
+}
+
+export interface ReviewJsonLdInput {
+  author: string;
+  rating: number;
+  bestRating?: number;
+  body?: string;
+  date?: string;
+  itemName?: string;
+}
+
+export function reviewJsonLd(p: ReviewJsonLdInput) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    author: { "@type": "Person", name: p.author },
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: p.rating,
+      bestRating: p.bestRating ?? 5,
+    },
+    reviewBody: p.body,
+    datePublished: p.date,
+    itemReviewed: p.itemName
+      ? { "@type": "Product", name: p.itemName }
+      : undefined,
+  };
+}
+
+export interface ItemListJsonLdInput {
+  /** Product / page items. */
+  items: Array<{ name: string; url: string; image?: string; price?: number }>;
+  itemListType?: "ItemList" | "OfferCatalog";
+}
+
+export function itemListJsonLd(p: ItemListJsonLdInput) {
+  return {
+    "@context": "https://schema.org",
+    "@type": p.itemListType ?? "ItemList",
+    itemListElement: p.items.map((it, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: it.url,
+      name: it.name,
+      image: it.image,
+      ...(it.price !== undefined
+        ? {
+            offers: {
+              "@type": "Offer",
+              price: it.price.toFixed(2),
+            },
+          }
+        : {}),
+    })),
   };
 }
 

@@ -118,6 +118,8 @@ function ReviewForm({
                 <img
                   src={URL.createObjectURL(file)}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className="size-full object-cover"
                 />
                 <button

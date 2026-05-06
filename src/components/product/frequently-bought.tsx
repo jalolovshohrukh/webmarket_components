@@ -66,6 +66,8 @@ function FrequentlyBought({
                     <img
                       src={p.imageUrl}
                       alt={p.title}
+                      loading="lazy"
+                      decoding="async"
                       className="size-full object-cover"
                     />
                   </div>

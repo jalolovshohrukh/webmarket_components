@@ -157,6 +157,8 @@ function ReviewItem({ review }: { review: Review }) {
                   key={i}
                   src={src}
                   alt=""
+                  loading="lazy"
+                  decoding="async"
                   className="size-16 rounded-md object-cover"
                 />
               ))}

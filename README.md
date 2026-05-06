@@ -66,7 +66,9 @@ That's it. Each file is self-contained: forwardRef, named exports, JSDoc-free, n
 
 ## SEO
 
-There's a headless `<Seo />` helper at [src/components/seo/seo.tsx](src/components/seo/seo.tsx) that imperatively syncs `document.title`, `meta[name=description]`, canonical URL, Open Graph tags, Twitter cards, robots, and JSON-LD as props change — drop one near the root of every route. Typed builders ship for `productJsonLd`, `breadcrumbJsonLd`, and `organizationJsonLd`.
+A headless [`<Seo />`](src/components/seo/seo.tsx) helper imperatively syncs `document.title`, meta description, canonical, Open Graph, Twitter cards, robots, theme-color, **product Open Graph extension tags** (`og:price:amount`, `product:availability`, `product:brand`, etc.), and JSON-LD as props change. Drop one near the root of every route.
+
+JSON-LD builders ship for: `productJsonLd`, `breadcrumbJsonLd`, `organizationJsonLd`, `reviewJsonLd`, `itemListJsonLd`.
 
 ```tsx
 <Seo
@@ -75,12 +77,44 @@ There's a headless `<Seo />` helper at [src/components/seo/seo.tsx](src/componen
   description={product.description}
   canonical={`https://webmarket.tj/product/${product.id}`}
   image={product.imageUrl}
+  imageAlt={product.title}
   type="product"
-  jsonLd={productJsonLd({ name: product.title, price: 249, priceCurrency: "USD", availability: "InStock" })}
+  product={{
+    price: 249,
+    priceCurrency: "USD",
+    availability: "in stock",
+    condition: "new",
+    brand: "Webmarket Audio",
+    retailerItemId: product.id,
+  }}
+  jsonLd={[
+    productJsonLd({
+      name: product.title,
+      price: 249,
+      priceCurrency: "USD",
+      availability: "InStock",
+      brand: "Webmarket Audio",
+      rating: { value: 4.6, count: 2340 },
+    }),
+    breadcrumbJsonLd({ items: [...] }),
+  ]}
 />
 ```
 
-This is a runtime DOM patch — perfect for SPA navigation and crawlers that execute JS (Googlebot does). For full crawler coverage, also pre-render or SSR your routes (Vite SSG, Next.js, Astro). Static fallbacks live in `index.html` so the unrendered first byte still has sane meta.
+### Product SEO checklist (covered out of the box)
+
+- [x] Semantic HTML — every product card uses `<h3>` for title, `<img>` with alt
+- [x] Visible-in-HTML pricing/title (no JS-only data dependencies)
+- [x] Lazy-loaded images everywhere; first-fold gallery image set to `loading="eager"` + `fetchPriority="high"` for LCP
+- [x] Mobile responsive — kit-wide audited at 375px, zero horizontal overflow
+- [x] Open Graph base + product extension (`og:price:*`, `product:availability`, `product:brand`)
+- [x] Twitter card auto-promoted to `summary_large_image` when an image is set
+- [x] Schema.org JSON-LD: Product / Breadcrumb / Organization / Review / ItemList
+- [x] Static `index.html` fallbacks so first-byte crawlers see baseline meta
+
+### Caveats — true SEO needs SSR/SSG
+
+The `<Seo />` helper patches `document.head` at runtime. Googlebot executes JS and reads it correctly. For other crawlers (Bing, DuckDuckGo, social link previews, AI assistants), you'll want to pre-render or SSR each route — drop the kit into Vite SSG, Next.js, or Astro and `<Seo />` works the same way (Next.js needs the `'use client'` directive on the consuming route).
 
 ## License
 

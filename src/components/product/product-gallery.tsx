@@ -65,6 +65,8 @@ const ProductGallery = React.forwardRef<HTMLDivElement, ProductGalleryProps>(
               <img
                 src={img.src}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover"
               />
             </button>
@@ -84,6 +86,9 @@ const ProductGallery = React.forwardRef<HTMLDivElement, ProductGalleryProps>(
                   <img
                     src={img.src}
                     alt={img.alt}
+                    loading={i === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    fetchPriority={i === 0 ? "high" : "auto"}
                     className="h-full w-full object-cover"
                   />
                 </div>

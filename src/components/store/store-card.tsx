@@ -55,6 +55,8 @@ const StoreCard = React.forwardRef<HTMLDivElement, StoreCardProps>(
               <img
                 src={store.bannerUrl}
                 alt=""
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover"
               />
             )}

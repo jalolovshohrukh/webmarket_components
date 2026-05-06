@@ -77,6 +77,9 @@ const StoreHeader = React.forwardRef<HTMLElement, StoreHeaderProps>(
             <img
               src={bannerUrl}
               alt=""
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="h-full w-full object-cover"
             />
           )}
