@@ -136,6 +136,31 @@ import { ProductCardMini } from "@/components/product/product-card-mini";
 import { StoreCard } from "@/components/store/store-card";
 import { StoreHeader } from "@/components/store/store-header";
 import { StoreSection } from "@/components/store/store-section";
+import { CompareBar } from "@/components/marketplace/compare-bar";
+import { MobileFilterTrigger } from "@/components/marketplace/mobile-filter-trigger";
+import { CookieConsent } from "@/components/legal/cookie-consent";
+import { ErrorState } from "@/components/ui/error-state";
+import { ImageLightbox } from "@/components/product/image-lightbox";
+import {
+  FloatingActionButton,
+  WhatsAppButton,
+} from "@/components/layout/floating-action-button";
+import { ShareButtons } from "@/components/marketplace/share-buttons";
+import { InstallmentBadge } from "@/components/product/installment-badge";
+import { FormField } from "@/components/forms/form-field";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { SearchResultsHeader } from "@/components/marketplace/search-results-header";
+import {
+  ThemeProvider,
+  ThemeToggleControl,
+  useTheme,
+} from "@/components/layout/theme-provider";
+import { BackToTop } from "@/components/layout/back-to-top";
+import { Wizard } from "@/components/forms/wizard";
+import { LiveBadge } from "@/components/ui/live-badge";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { useDebounce } from "@/hooks/use-debounce";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 import { VariantPicker } from "@/components/product/variant-picker";
 import { StockBadge } from "@/components/product/stock-badge";
 import { DeliveryCard } from "@/components/product/delivery-card";
@@ -202,6 +227,7 @@ import { Seo, breadcrumbJsonLd } from "@/components/seo/seo";
 import {
   Heart as HeartIcon,
   Home as HomeIcon,
+  MessageCircle,
   Repeat,
   ShoppingCart as ShoppingCartIcon,
   User as UserIcon,
@@ -5764,6 +5790,650 @@ function LeaderboardTablePage() {
 }
 
 // ---------------------------------------------------------------------------
+// Tier 1 + 2 + 3 doc pages — added in one batch
+// ---------------------------------------------------------------------------
+
+function CompareBarPage() {
+  const [items, setItems] = React.useState(sampleProducts.slice(0, 3));
+  return (
+    <article>
+      <PageHeader
+        title="Compare bar"
+        description="Sticky bottom tray showing products being compared. Pairs with the onCompare callback on ProductCard. Auto-hides if items is empty."
+      />
+      <Preview centered={false}>
+        <div className="relative h-64 overflow-hidden rounded-xl border border-gray-100 bg-muted/30">
+          <div className="p-4 text-[12px] text-text-tertiary">↓ Compare bar docked at bottom of frame</div>
+          <CompareBar
+            className="!fixed-none !static !inset-auto"
+            items={items}
+            onRemove={(id) => setItems((p) => p.filter((x) => x.id !== id))}
+            onClearAll={() => setItems([])}
+            onCompare={() => undefined}
+          />
+        </div>
+      </Preview>
+      <div className="mt-3 text-[12px] text-text-tertiary">
+        {items.length} item{items.length !== 1 && "s"} in compare ·{" "}
+        <button
+          className="text-primary hover:text-brand-700"
+          onClick={() => setItems(sampleProducts.slice(0, 3))}
+        >
+          reset
+        </button>
+      </div>
+    </article>
+  );
+}
+
+function MobileFilterTriggerPage() {
+  return (
+    <article>
+      <PageHeader
+        title="Mobile filter trigger"
+        description="Bottom sticky button that opens your FilterSidebar in a Sheet on mobile. Hides at lg+. Pair with an inline FilterSidebar at the desktop breakpoint."
+      />
+      <Preview centered={false}>
+        <div className="relative h-64 overflow-hidden rounded-xl border border-gray-100 bg-muted/30 p-4">
+          <p className="text-[13px] text-text-secondary">
+            Tap the floating &ldquo;Filters&rdquo; button at the bottom of this
+            frame to open the sheet (visible only below the lg breakpoint).
+          </p>
+          <div className="absolute inset-x-0 bottom-3 flex justify-center">
+            <MobileFilterTrigger
+              count={3}
+              sheetTitle="Refine results"
+              footer={
+                <div className="flex justify-end gap-2">
+                  <Button variant="ghost">Reset</Button>
+                  <Button variant="primary">Apply</Button>
+                </div>
+              }
+            >
+              <p className="text-[13px] text-text-tertiary">
+                Pass any filter UI here — typically your{" "}
+                <code className="rounded bg-gray-100 px-1.5 py-0.5 text-[12px] font-mono">
+                  &lt;FilterSidebar /&gt;
+                </code>
+                .
+              </p>
+            </MobileFilterTrigger>
+          </div>
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
+function CookieConsentPage() {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <article>
+      <PageHeader
+        title="Cookie consent"
+        description="GDPR / privacy notice banner. Self-managing — reads localStorage on mount and only renders if the user hasn't decided yet. Three variants: bottom-banner, bottom-floating, card."
+      />
+      <Demo
+        preview={
+          <div className="space-y-3">
+            <p className="text-[13px] text-text-secondary">
+              Click below to render the banner inline.{" "}
+              {open ? "(open)" : "(hidden)"}
+            </p>
+            <Button onClick={() => setOpen((o) => !o)}>
+              {open ? "Hide preview" : "Show preview"}
+            </Button>
+            {open && (
+              <div className="relative">
+                <CookieConsent
+                  variant="card"
+                  storageKey="wm-doc-demo-consent"
+                  onDecide={() => setOpen(false)}
+                  onCustomize={() => undefined}
+                />
+              </div>
+            )}
+          </div>
+        }
+        code={`<CookieConsent
+  variant="bottom-floating"
+  policyHref="/privacy"
+  onDecide={(d) => analytics.track("cookie_consent", { d })}
+  onCustomize={() => openPreferences()}
+/>`}
+      />
+    </article>
+  );
+}
+
+function ErrorStatePage() {
+  return (
+    <article>
+      <PageHeader
+        title="Error state"
+        description="404 / 500 / offline / no-results / generic error states. Pair with a retry handler or a 'Go home' link."
+      />
+      <Preview centered={false}>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-xl border border-gray-100 bg-card">
+            <ErrorState variant="404" homeHref="#introduction" />
+          </div>
+          <div className="rounded-xl border border-gray-100 bg-card">
+            <ErrorState variant="500" onRetry={() => undefined} />
+          </div>
+          <div className="rounded-xl border border-gray-100 bg-card">
+            <ErrorState variant="offline" onRetry={() => undefined} />
+          </div>
+          <div className="rounded-xl border border-gray-100 bg-card">
+            <ErrorState
+              variant="no-results"
+              title="No products match those filters"
+              description="Try clearing one or two filters or searching for a different keyword."
+            />
+          </div>
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
+function ImageLightboxPage() {
+  const [open, setOpen] = React.useState(false);
+  return (
+    <article>
+      <PageHeader
+        title="Image lightbox"
+        description="Full-screen image viewer with zoom + pan + arrow-key navigation. Drop alongside ProductGallery or any image grid."
+      />
+      <Preview>
+        <div className="grid grid-cols-3 gap-2">
+          {galleryImages.map((img) => (
+            <button
+              key={img.src}
+              type="button"
+              onClick={() => setOpen(true)}
+              className="aspect-square overflow-hidden rounded-lg border border-gray-100"
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                loading="lazy"
+                className="size-full object-cover transition-transform hover:scale-105"
+              />
+            </button>
+          ))}
+        </div>
+        <ImageLightbox
+          open={open}
+          onOpenChange={setOpen}
+          images={galleryImages}
+        />
+      </Preview>
+    </article>
+  );
+}
+
+// ---- Tier 2 ---------------------------------------------------------------
+
+function FloatingActionButtonPage() {
+  return (
+    <article>
+      <PageHeader
+        title="Floating action button"
+        description="Bottom-right circular CTA for chat / WhatsApp / Telegram contact. WhatsAppButton ships pre-themed."
+      />
+      <Preview centered={false}>
+        <div className="relative h-72 overflow-hidden rounded-xl border border-gray-100 bg-muted/30">
+          <p className="p-4 text-[13px] text-text-secondary">
+            Two FABs are docked inside this frame — open chat (left) and
+            WhatsApp (right). In real usage they're position-fixed to the
+            actual viewport.
+          </p>
+          <div className="absolute bottom-4 right-4 flex items-end gap-3">
+            <FloatingActionButton
+              tone="primary"
+              size="md"
+              icon={<MessageCircle />}
+              aria-label="Open chat"
+              className="!static"
+            />
+            <WhatsAppButton
+              phone="992970400500"
+              message="Hi! I have a question about your products."
+              pulse
+              className="!static"
+            />
+          </div>
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
+function ShareButtonsPage() {
+  return (
+    <article>
+      <PageHeader
+        title="Share buttons"
+        description="Share a URL to WhatsApp / Telegram / Facebook / X / email or copy the link. Native share sheet on mobile when available."
+      />
+      <Preview>
+        <div className="space-y-4 w-full max-w-md">
+          <ShareButtons
+            url="https://webmarket.tj/product/p1"
+            title="Wireless headphones"
+            text="Check this out on Webmarket"
+          />
+          <ShareButtons
+            url="https://webmarket.tj/product/p1"
+            title="Wireless headphones"
+            variant="compact"
+          />
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
+function InstallmentBadgePage() {
+  return (
+    <article>
+      <PageHeader
+        title="Installment badge"
+        description="The 'from 221 сомони/мес' visual signature that's prevalent in regional commerce. Drop into a ProductCard slot, a price block, or the cart summary."
+      />
+      <Demo
+        preview={
+          <div className="flex flex-col items-start gap-3">
+            <InstallmentBadge
+              monthly={{ amount: 221 }}
+              months={12}
+              fromLabel="from"
+            />
+            <InstallmentBadge
+              monthly={{ amount: 49 }}
+              variant="compact"
+            />
+          </div>
+        }
+        code={`<InstallmentBadge monthly={{ amount: 221 }} months={12} />
+<InstallmentBadge variant="compact" monthly={{ amount: 49 }} />`}
+      />
+    </article>
+  );
+}
+
+function FormFieldPage() {
+  const [v, setV] = React.useState("");
+  return (
+    <article>
+      <PageHeader
+        title="Form field"
+        description="Generic field wrapper — wires the label, helper text, error message, and ARIA attributes for any control. Stop hand-wiring htmlFor / aria-describedby."
+      />
+      <Preview>
+        <div className="w-full max-w-sm space-y-4">
+          <FormField label="Email" required helperText="We'll send you order updates.">
+            <Input type="email" placeholder="you@example.com" />
+          </FormField>
+          <FormField
+            label="Username"
+            error={v.length > 0 && v.length < 3 ? "Must be 3+ characters" : undefined}
+            labelExtra={`${v.length}/20`}
+          >
+            <Input
+              value={v}
+              onChange={(e) => setV(e.target.value)}
+              maxLength={20}
+            />
+          </FormField>
+          <FormField label="Bio" helperText="Optional. Markdown supported.">
+            <Textarea rows={3} />
+          </FormField>
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
+function ConfirmDialogPage() {
+  const [open, setOpen] = React.useState(false);
+  const [destructive, setDestructive] = React.useState(false);
+  return (
+    <article>
+      <PageHeader
+        title="Confirm dialog"
+        description="'Are you sure?' specific Dialog variant. Default tone for benign confirms; 'destructive' tone for delete / discard / sign-out."
+      />
+      <Demo
+        preview={
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={() => { setDestructive(false); setOpen(true); }}>
+              Confirm something
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => { setDestructive(true); setOpen(true); }}
+            >
+              Delete account
+            </Button>
+            <ConfirmDialog
+              open={open}
+              onOpenChange={setOpen}
+              tone={destructive ? "destructive" : "default"}
+              title={destructive ? "Delete this account?" : "Apply changes?"}
+              description={
+                destructive
+                  ? "This permanently removes the account, all orders, and the wishlist. This action cannot be undone."
+                  : "These updates will be visible to your customers immediately."
+              }
+              onConfirm={() => setOpen(false)}
+            />
+          </div>
+        }
+        code={`<ConfirmDialog
+  open={open} onOpenChange={setOpen}
+  tone="destructive"
+  title="Delete this account?"
+  description="This action cannot be undone."
+  onConfirm={async () => { await api.delete(); }}
+/>`}
+      />
+    </article>
+  );
+}
+
+function SearchResultsHeaderPage() {
+  const [page, setPage] = React.useState(2);
+  const [sort, setSort] = React.useState("popular");
+  const [view, setView] = React.useState<"grid" | "list">("grid");
+  return (
+    <article>
+      <PageHeader
+        title="Search results header"
+        description="'Showing 1-20 of 482 results for ...' with sort + view toggle docked on the right."
+      />
+      <Preview centered={false}>
+        <SearchResultsHeader
+          query="wireless headphones"
+          total={482}
+          page={page}
+          perPage={20}
+          actions={
+            <>
+              <SortDropdown
+                options={defaultSortOptions}
+                value={sort}
+                onValueChange={setSort}
+              />
+              <ViewToggle value={view} onValueChange={setView} />
+            </>
+          }
+        />
+      </Preview>
+      <div className="mt-3 flex items-center gap-3 text-[12px] text-text-tertiary">
+        <span>Page {page}</span>
+        <button className="text-primary hover:text-brand-700" onClick={() => setPage((p) => Math.max(1, p - 1))}>
+          prev
+        </button>
+        <button className="text-primary hover:text-brand-700" onClick={() => setPage((p) => p + 1)}>
+          next
+        </button>
+      </div>
+    </article>
+  );
+}
+
+// ---- Tier 3 ---------------------------------------------------------------
+
+function ThemeProviderInner() {
+  const { theme, resolvedTheme, toggleTheme } = useTheme();
+  return (
+    <div className="space-y-3 rounded-lg border border-gray-100 bg-card p-4">
+      <div className="text-[13px]">
+        Theme preference:{" "}
+        <span className="font-mono font-semibold text-text-primary">{theme}</span>{" "}
+        · Resolved:{" "}
+        <span className="font-mono font-semibold text-text-primary">{resolvedTheme}</span>
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <ThemeToggleControl variant="segmented" />
+        <ThemeToggleControl variant="cycle" />
+        <Button variant="secondary" size="sm" onClick={toggleTheme}>
+          Toggle
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function ThemeProviderPage() {
+  return (
+    <article>
+      <PageHeader
+        title="Theme provider"
+        description="Portable theme provider. Persists the choice to localStorage, applies .dark to <html>, and reacts to system preference changes when theme = 'system'. Wrap your app once at the root."
+      />
+      <Preview>
+        <ThemeProvider storageKey="wm-doc-demo-theme">
+          <ThemeProviderInner />
+        </ThemeProvider>
+      </Preview>
+      <div className="mt-4">
+        <Code>{`<ThemeProvider defaultTheme="system">
+  <App />
+</ThemeProvider>
+
+// anywhere inside:
+const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();`}</Code>
+      </div>
+    </article>
+  );
+}
+
+function BackToTopPage() {
+  return (
+    <article>
+      <PageHeader
+        title="Back to top"
+        description="Auto-showing scroll-to-top button. Renders once you've scrolled past `threshold` (default 400px) and disappears when you're back near the top."
+      />
+      <Preview>
+        <div className="space-y-3">
+          <p className="text-p1 text-text-secondary">
+            Scroll the page down — a back-to-top button will appear at the
+            bottom-right of the actual viewport once you've scrolled past
+            400px. Click it to smoothly scroll back to the top.
+          </p>
+          <BackToTop />
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
+function WizardPage() {
+  return (
+    <article>
+      <PageHeader
+        title="Wizard"
+        description="Multi-step form / onboarding / checkout wrapper. Pass an array of { id, title, content, validate? }. Each step's validate hook can return a boolean or Promise<boolean> to block forward navigation."
+      />
+      <Preview centered={false}>
+        <Wizard
+          steps={[
+            {
+              id: "account",
+              title: "Account",
+              description: "Email + password",
+              content: (
+                <div className="space-y-3">
+                  <FormField label="Email" required>
+                    <Input type="email" placeholder="you@example.com" />
+                  </FormField>
+                  <FormField label="Password" required>
+                    <Input type="password" />
+                  </FormField>
+                </div>
+              ),
+            },
+            {
+              id: "profile",
+              title: "Profile",
+              description: "Name + phone",
+              content: (
+                <div className="space-y-3">
+                  <FormField label="Full name" required>
+                    <Input />
+                  </FormField>
+                  <FormField label="Phone" helperText="For order updates only.">
+                    <Input type="tel" placeholder="+992 ..." />
+                  </FormField>
+                </div>
+              ),
+            },
+            {
+              id: "preferences",
+              title: "Preferences",
+              description: "Notifications",
+              content: (
+                <div className="space-y-3">
+                  <CheckboxField label="Email me about new arrivals" defaultChecked />
+                  <CheckboxField label="Email me about deals" />
+                </div>
+              ),
+            },
+          ]}
+          onComplete={() => undefined}
+        />
+      </Preview>
+    </article>
+  );
+}
+
+function LiveBadgePage() {
+  return (
+    <article>
+      <PageHeader
+        title="Live badge"
+        description="Pulsing dot + label. For 'live now' streams, flash sales, real-time stock indicators."
+      />
+      <Demo
+        preview={
+          <div className="flex flex-wrap items-center gap-3">
+            <LiveBadge label="Live" tone="danger" />
+            <LiveBadge label="Selling fast" tone="primary" />
+            <LiveBadge label="Online" tone="success" />
+            <LiveBadge label="Updating" tone="info" />
+          </div>
+        }
+        code={`<LiveBadge label="Live" tone="danger" />
+<LiveBadge label="Selling fast" tone="primary" />`}
+      />
+    </article>
+  );
+}
+
+// ---- Hooks doc pages -------------------------------------------------------
+
+function UseMediaQueryPage() {
+  const isMd = useMediaQuery("(min-width: 768px)");
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  return (
+    <article>
+      <PageHeader
+        title="useMediaQuery"
+        description="Reactive media query hook. Returns true while the query matches. SSR-safe (returns false on the server)."
+      />
+      <Preview>
+        <div className="space-y-2 text-[14px]">
+          <div>
+            <code className="rounded bg-gray-100 px-1.5 py-0.5 text-[12px] font-mono">
+              (min-width: 768px)
+            </code>
+            : <strong className={isMd ? "text-success-700" : "text-text-tertiary"}>
+              {String(isMd)}
+            </strong>
+          </div>
+          <div>
+            <code className="rounded bg-gray-100 px-1.5 py-0.5 text-[12px] font-mono">
+              (prefers-reduced-motion: reduce)
+            </code>
+            : <strong className={reducedMotion ? "text-success-700" : "text-text-tertiary"}>
+              {String(reducedMotion)}
+            </strong>
+          </div>
+        </div>
+      </Preview>
+      <div className="mt-4">
+        <Code>{`import { useMediaQuery, useIsLg, usePrefersReducedMotion } from "@/hooks/use-media-query";
+
+const isLg = useIsLg();
+const reducedMotion = usePrefersReducedMotion();
+const custom = useMediaQuery("(orientation: portrait)");`}</Code>
+      </div>
+    </article>
+  );
+}
+
+function UseDebouncePage() {
+  const [q, setQ] = React.useState("");
+  const debounced = useDebounce(q, 300);
+  return (
+    <article>
+      <PageHeader
+        title="useDebounce"
+        description="Returns the value after `delayMs` of inactivity. Useful for search-as-you-type, expensive validators, autosave."
+      />
+      <Preview>
+        <div className="w-full max-w-sm space-y-3">
+          <Input
+            placeholder="Type something…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+          />
+          <div className="text-[13px]">
+            Live: <span className="font-mono">{q || "—"}</span>
+          </div>
+          <div className="text-[13px]">
+            Debounced (300ms):{" "}
+            <span className="font-mono text-primary">
+              {debounced || "—"}
+            </span>
+          </div>
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
+function UseLocalStoragePage() {
+  const [name, setName] = useLocalStorage<string>("wm-doc-demo-name", "");
+  return (
+    <article>
+      <PageHeader
+        title="useLocalStorage"
+        description="useState-like hook backed by localStorage. Reactive across tabs via the native storage event. SSR-safe — returns initialValue on the server."
+      />
+      <Preview>
+        <div className="w-full max-w-sm space-y-3">
+          <FormField label="Your name (persists in localStorage)">
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
+          </FormField>
+          <p className="text-[12px] text-text-tertiary">
+            Refresh the page — the value sticks. Open another tab to see it
+            sync across windows.
+          </p>
+          <Button variant="ghost" size="sm" onClick={() => setName("")}>
+            Reset
+          </Button>
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Page registry
 // ---------------------------------------------------------------------------
 
@@ -5798,6 +6468,8 @@ const sections: DocSection[] = [
       { id: "textarea", title: "Textarea", Component: TextareaPage },
       { id: "select", title: "Select", Component: SelectPage },
       { id: "label", title: "Label", Component: LabelPage },
+      { id: "form-field", title: "Form field", Component: FormFieldPage },
+      { id: "wizard", title: "Wizard", Component: WizardPage },
       { id: "checkbox", title: "Checkbox", Component: CheckboxPage },
       { id: "radio-group", title: "Radio group", Component: RadioGroupPage },
       { id: "switch", title: "Switch", Component: SwitchPage },
@@ -5831,6 +6503,8 @@ const sections: DocSection[] = [
       { id: "card", title: "Card", Component: CardPage },
       { id: "badge", title: "Badge", Component: BadgePage },
       { id: "tag", title: "Tag", Component: TagPage },
+      { id: "live-badge", title: "Live badge", Component: LiveBadgePage },
+      { id: "error-state", title: "Error state", Component: ErrorStatePage },
       { id: "avatar", title: "Avatar", Component: AvatarPage },
       { id: "rating", title: "Rating", Component: RatingPage },
       { id: "price", title: "Price", Component: PricePage },
@@ -5853,6 +6527,7 @@ const sections: DocSection[] = [
     title: "Overlays",
     pages: [
       { id: "dialog", title: "Dialog", Component: DialogPage },
+      { id: "confirm-dialog", title: "Confirm dialog", Component: ConfirmDialogPage },
       { id: "sheet", title: "Sheet", Component: SheetPage },
       { id: "popover", title: "Popover", Component: PopoverPage },
       { id: "toast", title: "Toast", Component: ToastPage },
@@ -5872,6 +6547,9 @@ const sections: DocSection[] = [
       { id: "side-nav", title: "Side nav", Component: SideNavPage },
       { id: "mega-menu", title: "Mega menu", Component: MegaMenuPage },
       { id: "mobile-nav-bar", title: "Mobile nav bar", Component: MobileNavBarPage },
+      { id: "floating-action-button", title: "Floating action button", Component: FloatingActionButtonPage },
+      { id: "back-to-top", title: "Back to top", Component: BackToTopPage },
+      { id: "theme-provider", title: "Theme provider", Component: ThemeProviderPage },
       { id: "hero-banner", title: "Hero banner", Component: HeroBannerPage },
     ],
   },
@@ -5890,6 +6568,8 @@ const sections: DocSection[] = [
       },
       { id: "variant-picker", title: "Variant picker", Component: VariantPickerPage },
       { id: "stock-badge", title: "Stock badge", Component: StockBadgePage },
+      { id: "installment-badge", title: "Installment badge", Component: InstallmentBadgePage },
+      { id: "image-lightbox", title: "Image lightbox", Component: ImageLightboxPage },
       { id: "delivery-card", title: "Delivery card", Component: DeliveryCardPage },
       { id: "seller-card", title: "Seller card", Component: SellerCardPage },
       { id: "reviews-block", title: "Reviews block", Component: ReviewsBlockPage },
@@ -5914,6 +6594,24 @@ const sections: DocSection[] = [
       { id: "sort-dropdown", title: "Sort dropdown", Component: SortDropdownPage },
       { id: "view-toggle", title: "View toggle", Component: ViewTogglePage },
       { id: "active-filters-bar", title: "Active filters bar", Component: ActiveFiltersBarPage },
+      { id: "compare-bar", title: "Compare bar", Component: CompareBarPage },
+      { id: "mobile-filter-trigger", title: "Mobile filter trigger", Component: MobileFilterTriggerPage },
+      { id: "search-results-header", title: "Search results header", Component: SearchResultsHeaderPage },
+      { id: "share-buttons", title: "Share buttons", Component: ShareButtonsPage },
+    ],
+  },
+  {
+    title: "Legal",
+    pages: [
+      { id: "cookie-consent", title: "Cookie consent", Component: CookieConsentPage },
+    ],
+  },
+  {
+    title: "Hooks",
+    pages: [
+      { id: "use-media-query", title: "useMediaQuery", Component: UseMediaQueryPage },
+      { id: "use-debounce", title: "useDebounce", Component: UseDebouncePage },
+      { id: "use-local-storage", title: "useLocalStorage", Component: UseLocalStoragePage },
     ],
   },
   {
