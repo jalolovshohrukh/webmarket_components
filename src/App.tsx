@@ -131,6 +131,8 @@ import { ProductStrip } from "@/components/marketplace/product-strip";
 import { ActiveFiltersBar } from "@/components/marketplace/active-filters-bar";
 import { SearchWithSuggestions } from "@/components/marketplace/search-with-suggestions";
 import { ProductCardList } from "@/components/product/product-card-list";
+import { ProductCardCompact } from "@/components/product/product-card-compact";
+import { ProductCardMini } from "@/components/product/product-card-mini";
 import { VariantPicker } from "@/components/product/variant-picker";
 import { StockBadge } from "@/components/product/stock-badge";
 import { DeliveryCard } from "@/components/product/delivery-card";
@@ -3727,6 +3729,67 @@ function SearchWithSuggestionsPage() {
 // Product detail doc pages
 // ---------------------------------------------------------------------------
 
+function ProductCardCompactPage() {
+  return (
+    <article>
+      <PageHeader
+        title="Product card · compact"
+        description="Smaller, denser ProductCard. ~60% the visual weight of the default — fits 5–8 per row at desktop, 2–3 on mobile. Use for category landings, search results, dense cross-sell strips."
+      />
+      <Preview centered={false}>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {sampleProducts.concat(sampleProducts).slice(0, 5).map((p, i) => (
+            <ProductCardCompact
+              key={`${p.id}-${i}`}
+              product={p}
+              onToggleWishlist={() => undefined}
+            />
+          ))}
+        </div>
+      </Preview>
+    </article>
+  );
+}
+
+function ProductCardMiniPage() {
+  return (
+    <article>
+      <PageHeader
+        title="Product card · mini"
+        description="Tiny horizontal chip — thumbnail + title + price, ~64px tall. For cart cross-sells, search-as-you-type rows, recently-viewed strips, mention popovers."
+      />
+      <Preview centered={false}>
+        <div className="grid gap-2 sm:max-w-md">
+          {sampleProducts.map((p) => (
+            <ProductCardMini
+              key={p.id}
+              product={p}
+              onAddToCart={() => undefined}
+            />
+          ))}
+        </div>
+      </Preview>
+      <div className="mt-6">
+        <h3 className="text-h5 font-semibold text-text-primary">
+          Borderless variant — drop into a popover or a list
+        </h3>
+        <Preview centered={false} className="mt-2">
+          <div className="grid gap-1 sm:max-w-md rounded-lg border border-gray-100 bg-card p-1">
+            {sampleProducts.slice(0, 3).map((p) => (
+              <ProductCardMini
+                key={p.id}
+                product={p}
+                bordered={false}
+                onAddToCart={() => undefined}
+              />
+            ))}
+          </div>
+        </Preview>
+      </div>
+    </article>
+  );
+}
+
 function ProductCardListPage() {
   return (
     <article>
@@ -5649,6 +5712,8 @@ const sections: DocSection[] = [
     pages: [
       { id: "product-card", title: "Product card", Component: ProductCardPage },
       { id: "product-card-list", title: "Product card (list)", Component: ProductCardListPage },
+      { id: "product-card-compact", title: "Product card (compact)", Component: ProductCardCompactPage },
+      { id: "product-card-mini", title: "Product card (mini)", Component: ProductCardMiniPage },
       { id: "product-grid", title: "Product grid", Component: ProductGridPage },
       {
         id: "product-gallery",
