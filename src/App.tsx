@@ -192,6 +192,14 @@ import {
   useCommandPaletteHotkey,
   type CommandItem,
 } from "@/components/ui/command-palette";
+import { MobileNavBar } from "@/components/layout/mobile-nav-bar";
+import {
+  Heart as HeartIcon,
+  Home as HomeIcon,
+  Repeat,
+  ShoppingCart as ShoppingCartIcon,
+  User as UserIcon,
+} from "lucide-react";
 import {
   DollarSign,
   ShoppingBag as ShoppingBagIcon,
@@ -3308,7 +3316,7 @@ function NumberInputPage() {
       />
       <Demo
         preview={
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-4">
             <NumberInput size="sm" value={n} onValueChange={setN} min={0} max={20} />
             <NumberInput size="md" value={n} onValueChange={setN} min={0} max={20} />
             <NumberInput size="lg" value={n} onValueChange={setN} min={0} max={20} />
@@ -4551,6 +4559,125 @@ function ForgotPasswordFormPage() {
   );
 }
 
+function MobileNavBarPage() {
+  const [active, setActive] = React.useState("home");
+  return (
+    <article>
+      <PageHeader
+        title="Mobile nav bar"
+        description="Bottom tab bar for mobile. Fixed to the viewport bottom, respects iOS safe-area-inset, hides on `lg` and up. Drop it once at the page root."
+      />
+      <Preview centered={false}>
+        <div className="relative h-[420px] overflow-hidden rounded-xl border border-gray-200 bg-muted/30">
+          <div className="px-4 pt-4 text-[12px] text-text-tertiary">
+            ↓ Bottom-pinned nav bar
+          </div>
+          <div className="absolute inset-x-0 bottom-0">
+            <nav
+              aria-label="Mobile navigation"
+              className="bg-background border-t border-gray-200"
+            >
+              <ul
+                className="grid"
+                style={{ gridTemplateColumns: "repeat(4, minmax(0, 1fr))" }}
+              >
+                {(
+                  [
+                    { id: "home", label: "Home", icon: <HomeIcon /> },
+                    { id: "wish", label: "Wishlist", icon: <HeartIcon /> },
+                    {
+                      id: "cart",
+                      label: "Cart",
+                      icon: <ShoppingCartIcon />,
+                      badge: 3,
+                    },
+                    { id: "compare", label: "Compare", icon: <Repeat /> },
+                  ] as const
+                ).map((item) => {
+                  const isActive = item.id === active;
+                  return (
+                    <li key={item.id} className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setActive(item.id)}
+                        aria-current={isActive ? "page" : undefined}
+                        className="flex w-full flex-col items-center justify-center gap-0 py-2 min-h-12 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                      >
+                        <span
+                          className={cn(
+                            "relative grid place-items-center [&_svg]:size-5",
+                            isActive ? "text-primary" : "text-text-tertiary"
+                          )}
+                        >
+                          {item.icon}
+                          {"badge" in item && (item as { badge?: number }).badge ? (
+                            <span className="absolute -right-2 -top-1 grid h-4 min-w-[16px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-none text-primary-foreground">
+                              {(item as { badge: number }).badge}
+                            </span>
+                          ) : null}
+                        </span>
+                        <span
+                          className={cn(
+                            "mt-0.5 text-[10.5px] font-medium leading-tight",
+                            isActive ? "text-primary" : "text-text-tertiary"
+                          )}
+                        >
+                          {item.label}
+                        </span>
+                      </button>
+                      {isActive && (
+                        <span
+                          aria-hidden
+                          className="absolute inset-x-4 top-0 h-0.5 rounded-b-full bg-primary"
+                        />
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          </div>
+        </div>
+        <p className="mt-3 text-[12px] text-text-tertiary">
+          Active: <span className="font-mono text-text-primary">{active}</span>{" "}
+          (this preview renders the bar inside a frame so you can see it without
+          docking it to the actual viewport).
+        </p>
+      </Preview>
+      <div className="mt-6">
+        <Code>{`<MobileNavBar
+  activeId={active}
+  onItemClick={(item) => setActive(item.id)}
+  items={[
+    { id: "home",    label: "Home",    icon: <Home /> },
+    { id: "wish",    label: "Wishlist", icon: <Heart /> },
+    { id: "cart",    label: "Cart",    icon: <ShoppingCart />, badge: 3 },
+    { id: "compare", label: "Compare", icon: <Repeat /> },
+  ]}
+/>`}</Code>
+      </div>
+      <p className="mt-4 text-[13px] text-text-secondary">
+        For real usage, drop a single <code>{"<MobileNavBar>"}</code> at the root
+        of your app — it&apos;s position-fixed so it floats above page content.
+        Use the <code>floating</code> prop for the rounded-corner card style.
+        Hides automatically at <code>lg</code> and up; pair with a desktop side
+        nav for that breakpoint.
+      </p>
+      {/* Live one stuck to the actual viewport bottom for this page only */}
+      <MobileNavBar
+        activeId={active}
+        onItemClick={(item) => setActive(item.id)}
+        items={[
+          { id: "home", label: "Home", icon: <HomeIcon /> },
+          { id: "wish", label: "Wishlist", icon: <HeartIcon /> },
+          { id: "cart", label: "Cart", icon: <ShoppingCartIcon />, badge: 3 },
+          { id: "profile", label: "Account", icon: <UserIcon /> },
+        ]}
+      />
+    </article>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Charts — sample data
 // ---------------------------------------------------------------------------
@@ -5382,6 +5509,7 @@ const sections: DocSection[] = [
       { id: "main-nav", title: "Main nav", Component: MainNavPage },
       { id: "side-nav", title: "Side nav", Component: SideNavPage },
       { id: "mega-menu", title: "Mega menu", Component: MegaMenuPage },
+      { id: "mobile-nav-bar", title: "Mobile nav bar", Component: MobileNavBarPage },
       { id: "hero-banner", title: "Hero banner", Component: HeroBannerPage },
     ],
   },

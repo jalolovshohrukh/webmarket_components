@@ -96,7 +96,7 @@ function CartLineItemRow({
             {item.stockHint}
           </div>
         )}
-        <div className="mt-3 flex items-center gap-2">
+        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1.5">
           <QuantityStepper
             value={item.quantity}
             onChange={(q) => onQuantityChange(item.id, q)}
@@ -105,21 +105,24 @@ function CartLineItemRow({
             removeAtMin
             onRemove={() => onRemove(item.id)}
           />
-          <div className="ml-auto flex items-center gap-1">
+          <div className="ml-auto flex items-center gap-0.5">
             {onSaveForLater && (
               <Button
                 variant="ghost"
                 size="sm"
-                iconLeft={<Heart />}
                 onClick={() => onSaveForLater(item.id)}
+                aria-label="Save for later"
+                className="!px-2 sm:!px-3"
               >
-                Save for later
+                <Heart />
+                <span className="hidden sm:inline">Save for later</span>
               </Button>
             )}
             <Button
               variant="text"
               size="sm"
               onClick={() => onRemove(item.id)}
+              className="!px-2"
             >
               Remove
             </Button>
