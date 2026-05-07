@@ -41,13 +41,13 @@ function SellerCard({
   return (
     <Card className={cn("p-4", className)}>
       <div className="flex items-start gap-3">
-        <Avatar size="lg">
+        <Avatar size="lg" className="shrink-0">
           {avatarUrl && <AvatarImage src={avatarUrl} alt={name} />}
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <h4 className="truncate text-[15px] font-semibold text-text-primary">
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1">
+            <h4 className="min-w-0 truncate text-[15px] font-semibold text-text-primary">
               {href ? (
                 <a href={href} className="hover:text-primary">
                   {name}
@@ -57,7 +57,7 @@ function SellerCard({
               )}
             </h4>
             {verified && (
-              <Badge variant="info" className="gap-1">
+              <Badge variant="info" className="shrink-0 gap-1">
                 <ShieldCheck className="size-3" />
                 Verified
               </Badge>
@@ -79,11 +79,16 @@ function SellerCard({
           </div>
         </div>
       </div>
-      <div className="mt-3 flex items-center gap-2">
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
         {href && (
-          <Button variant="secondary" size="sm" asChild className="flex-1">
+          <Button
+            variant="secondary"
+            size="sm"
+            asChild
+            className="w-full sm:w-auto sm:flex-1"
+          >
             <a href={href}>
-              Visit shop
+              <span className="whitespace-nowrap">Visit shop</span>
               <ChevronRight />
             </a>
           </Button>
@@ -94,8 +99,9 @@ function SellerCard({
             size="sm"
             iconLeft={<MessageCircle />}
             onClick={onMessage}
+            className="w-full sm:w-auto"
           >
-            Message
+            <span className="whitespace-nowrap">Message</span>
           </Button>
         )}
       </div>
