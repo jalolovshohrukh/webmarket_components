@@ -1,7 +1,7 @@
 import { ChevronRight, MessageCircle, ShieldCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Rating } from "@/components/ui/rating";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -81,17 +81,16 @@ function SellerCard({
       </div>
       <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
         {href && (
-          <Button
-            variant="secondary"
-            size="sm"
-            asChild
-            className="w-full sm:w-auto sm:flex-1"
+          <a
+            href={href}
+            className={cn(
+              buttonVariants({ variant: "secondary", size: "sm" }),
+              "w-full whitespace-nowrap sm:w-auto sm:flex-1"
+            )}
           >
-            <a href={href}>
-              <span className="whitespace-nowrap">Visit shop</span>
-              <ChevronRight />
-            </a>
-          </Button>
+            Visit shop
+            <ChevronRight />
+          </a>
         )}
         {onMessage && (
           <Button
@@ -99,9 +98,9 @@ function SellerCard({
             size="sm"
             iconLeft={<MessageCircle />}
             onClick={onMessage}
-            className="w-full sm:w-auto"
+            className="w-full whitespace-nowrap sm:w-auto"
           >
-            <span className="whitespace-nowrap">Message</span>
+            Message
           </Button>
         )}
       </div>
